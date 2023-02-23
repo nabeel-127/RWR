@@ -1,3 +1,5 @@
+% 2023.02.23
+
 load fisheriris
 data = meas(:,3:4);
 % rng default; % For reproducibility
