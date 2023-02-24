@@ -1,3 +1,4 @@
+/.settings
 /AutoRun
 /Debug
 /extras
@@ -6,4 +7,7 @@
 /Release
 .cproject
 .project
+autoDebug.sh
+autoRun.sh
+BASR_Project
 log.txt
