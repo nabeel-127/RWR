@@ -1,0 +1,9 @@
+/AutoRun
+/Debug
+/extras
+/input
+/output
+/Release
+.cproject
+.project
+log.txt
