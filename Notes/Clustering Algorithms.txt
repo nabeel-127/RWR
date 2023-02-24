@@ -30,9 +30,21 @@ DBSCAN
 		epsilon = neighborhood around a data point i.e. if the distance between two points is lower or equal to epsilon then they are considered neighbors
 		minPts = minimum number of data points to define a cluster
 	Algorithm
-		(https://www.geeksforgeeks.org/dbscan-clustering-in-ml-density-based-clustering/)
-		1. Find all the neighbor points within eps and identify the core points or visited with more than MinPts neighbors.
-		2. For each core point if it is not already assigned to a cluster, create a new cluster.
-		3. Find recursively all its density connected points and assign them to the same cluster as the core point. A point a and b are said to be density connected if there exist a point c which has a sufficient number of points in its neighbors and both the points a and b are within the eps distance. This is a chaining process. So, if b is neighbor of c, c is neighbor of d, d is neighbor of e, which in turn is neighbor of a implies that b is neighbor of a.
-		4. Iterate through the remaining unvisited points in the dataset. Those points that do not belong to any cluster are noise.
+		1: (https://www.geeksforgeeks.org/dbscan-clustering-in-ml-density-based-clustering/)
+			
+			1. Find all the neighbor points within eps and identify the core points or visited with more than MinPts neighbors.
+			2. For each core point if it is not already assigned to a cluster, create a new cluster.
+			3. Find recursively all its density connected points and assign them to the same cluster as the core point. A point a and b are said to be density connected if there exist a point c which has a sufficient number of points in its neighbors and both the points a and b are within the eps distance. This is a chaining process. So, if b is neighbor of c, c is neighbor of d, d is neighbor of e, which in turn is neighbor of a implies that b is neighbor of a.
+			4. Iterate through the remaining unvisited points in the dataset. Those points that do not belong to any cluster are noise.
+		2: (ChatGPT)
+			1. Load your dataset into MATLAB and preprocess it as needed (e.g., normalization, standardization).
+			2. Choose your parameters for DBSCAN: epsilon and the minimum number of points required to form a cluster (minPts).
+			3. Calculate the pairwise distances between all data points in the dataset. MATLAB's built-in pdist function can be used for this.
+			4. Compute the epsilon-neighborhood of each data point. This can be done using MATLAB's built-in rangesearch function.
+			5. Identify the core points, which are the data points with at least minPts neighbors within epsilon distance.
+			6. Assign each core point to a cluster and expand the cluster by adding all points within the epsilon-neighborhood to the cluster. This can be done using a loop over the core points and their neighbors.
+			7. Identify the non-core points that are within the epsilon-neighborhood of a core point and assign them to the same cluster as the core point.
+			8. Assign all remaining points to noise.
+			9. Return the clusters and noise as output.
+
 
