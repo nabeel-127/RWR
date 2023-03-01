@@ -192,8 +192,80 @@ clc
 
 
 
-% % 2023.02.24
-% % DBSCAN implementation 2
+% % % 2023.02.24
+% % % DBSCAN failed implementation 2
+% 
+% rng('default')
+% N = 300; 
+% r1 = 0.5;
+% r2 = 5;
+% theta = linspace(0, 2 * pi, N)';
+% X1 = r1 * [cos(theta), sin(theta)] + rand(N, 1);
+% X2 = r2 * [cos(theta), sin(theta)] + rand(N, 1);
+% 
+% dataIn = [X1; X2];
+% eps = .1;
+% minPts = 5;
+% 
+% data = (dataIn - min(dataIn)) ./ (max(dataIn) - min(dataIn));
+% 
+% buffer = [];
+% [m, n] = size(data);
+% distance = zeros(m, n);
+% dataInfo = [zeros(size(data, 1), 1) (-1 * ones(size(data, 1), 1))]; % column1 = visted or not, column2 = cluster group (-1 = none, 0 = noise)
+% clusterID = 0;
+% 
+% buffer(end + 1) = 1;
+% 
+% while any(dataInfo(:, 1) == 0)
+% 
+% 	index = buffer(1);
+% 	
+% 	if dataInfo(index, 1) == 1
+% 		buffer = buffer(2: end);
+% 		continue;
+% 	else
+% 		dataInfo(index, 1) = 1;
+% 	end
+% 	
+% 	tempCenter = data(index, :);
+% 	distance = sqrt(sum((data - tempCenter) .^ 2, 2));
+% 	neighbors = find(distance <= eps);
+% 	
+% 	if (size(neighbors, 1) < minPts) && (dataInfo(index, 2) == -1)
+% 		dataInfo(index, 2) = 0;
+% 	elseif (size(neighbors, 1) > minPts) && (dataInfo(index, 2) == -1)
+% 		if length(buffer) < 1
+% 			clusterID = clusterID + 1;
+% 		end
+% 		dataInfo(neighbors, 2) = clusterID;
+% 		[temp, tempIndex] = sort(distance(neighbors), 'descend');
+% 		buffer = [buffer; tempIndex];
+% 	end
+% 	
+% 	buffer = buffer(2: end);
+% end
+% 
+% hold on
+% for i = 1: clusterID
+% 	plot(data(dataInfo(:, 2), 1), data(dataInfo(:, 2), 2), '.')
+% end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% % 2023.03.01
+% % DBSCAN implementation 3
 
 rng('default')
 N = 300; 
@@ -202,8 +274,10 @@ r2 = 5;
 theta = linspace(0, 2 * pi, N)';
 X1 = r1 * [cos(theta), sin(theta)] + rand(N, 1);
 X2 = r2 * [cos(theta), sin(theta)] + rand(N, 1);
-
 dataIn = [X1; X2];
+% rng default; % For reproducibility
+% dataIn = [randn(100,2)*0.75+ones(100,2);
+%     randn(100,2)*0.5-ones(100,2)];
 eps = .1;
 minPts = 5;
 
@@ -213,15 +287,24 @@ buffer = [];
 [m, n] = size(data);
 distance = zeros(m, n);
 dataInfo = [zeros(size(data, 1), 1) (-1 * ones(size(data, 1), 1))]; % column1 = visted or not, column2 = cluster group (-1 = none, 0 = noise)
-clusterID = 0;
+clusterID = 1;
+clusterSize = 0;
 
 buffer(end + 1) = 1;
 
 while any(dataInfo(:, 1) == 0)
 
+	if isempty(buffer) && (clusterSize > 0) % check if buffer is empty
+		clusterID = clusterID + 1;
+		clusterSize = 0;
+		buffer = min(find(dataInfo(:, 1) == 0));
+	elseif isempty(buffer)
+		buffer = min(find(dataInfo(:, 1) == 0));
+	end
+	
 	index = buffer(1);
 	
-	if dataInfo(index, 1) == 1
+	if dataInfo(index, 1) == 1 % check if index has been visited before
 		buffer = buffer(2: end);
 		continue;
 	else
@@ -231,27 +314,38 @@ while any(dataInfo(:, 1) == 0)
 	tempCenter = data(index, :);
 	distance = sqrt(sum((data - tempCenter) .^ 2, 2));
 	neighbors = find(distance <= eps);
+	neighbors = neighbors(dataInfo(neighbors, 1) == 0);
 	
-	if (size(neighbors, 1) < minPts) && (dataInfo(index, 2) == -1)
-		dataInfo(index, 2) = 0;
-	elseif (size(neighbors, 1) > minPts) && (dataInfo(index, 2) == -1)
-		if length(buffer) < 1
-			clusterID = clusterID + 1;
-		end
+% 	if isempty(buffer) && (size(neighbors, 1) < minPts) % noise check
+% 		dataInfo(index, 2) = 0;
+% 	elseif isempty(buffer) && (size(neighbors, 1) > minPts) % new cluster
+% 		clusterID = clusterID + 1;
+% 	end
+	
+	if not(isempty(buffer))	&& ((size(neighbors, 1) < minPts) && (clusterSize == 0)) % noise
+% 		clusterID = clusterID - 1;
+		dataInfo(neighbors, 2) = 0;
+	elseif not(isempty(buffer))	&& (size(neighbors, 1) < minPts)
+		dataInfo(index, 2) = clusterID;
+		clusterSize = clusterSize + 1;
+	elseif not(isempty(buffer))	&& (size(neighbors, 1) > minPts) % cluster
 		dataInfo(neighbors, 2) = clusterID;
 		[temp, tempIndex] = sort(distance(neighbors), 'descend');
+		tempIndex = neighbors(tempIndex);
+		tempIndex = setdiff(tempIndex, buffer);
 		buffer = [buffer; tempIndex];
+		clusterSize = clusterSize + 1;
 	end
 	
 	buffer = buffer(2: end);
 end
 
 hold on
-for i = 1: clusterID
-	plot(data(dataInfo(:, 2), 1), data(dataInfo(:, 2), 2), '.')
+for i = 0: clusterID
+	plot(data(dataInfo(:, 2) == i, 1), data(dataInfo(:, 2) == i, 2), '.') 	
 end
 
-
+% plot(data(:,1),data(:,2), '.')
 
 
 
