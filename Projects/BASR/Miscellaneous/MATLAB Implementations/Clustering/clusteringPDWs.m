@@ -1,17 +1,11 @@
-function [] = clusteringPDWs(pdws, clusterTime)
+function [] = clusteringPDWs(data)
 
 	eps = .1;
 	minPts = 5;
-	data = [pdws.RF pdws.PW pdws.PA pdws.PB pdws.PC pdws.PD];
-
-	rangeIndex = find((1e-8 .* double(pdws.TOA)) > clusterTime, 1, 'first');
-	data = double(data(1:(rangeIndex - 1), :));
-
 
 	data(:, 1) = normalize(data(:, 1), 0, 18000); % RF
 	data(:, 3) = normalize(data(:, 3), 0, 1000); % PW
 	data(:, 4:7) = normalize(data(:, 4:7), 0, 4096); % Powers
-
 
 	[dataInfo, clusterID] = myDBSCAN(data, eps, minPts);
 
