@@ -41,7 +41,7 @@ function [dataInfo, clusterID] = myDBSCAN(dataIn, eps, minPts)
 		
 		if not(isempty(buffer))	&& ((size(neighbors, 1) < minPts) && (clusterSize == 0)) % noise
 			% 		clusterID = clusterID - 1;
-			dataInfo(neighbors, 2) = 0;
+			dataInfo(index, 2) = 0;
 		elseif not(isempty(buffer))	&& (size(neighbors, 1) < minPts)
 			dataInfo(index, 2) = clusterID;
 			clusterSize = clusterSize + 1;

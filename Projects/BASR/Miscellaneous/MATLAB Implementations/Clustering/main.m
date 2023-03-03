@@ -1,3 +1,3 @@
 
 pdws = readHexDumpOfTPpdws();
-clusteringPDWs(0.001);
+clusteringPDWs(pdws, 0.03);

@@ -1,11 +1,11 @@
-function [] = clusteringPDWs(clusterTime)
+function [] = clusteringPDWs(pdws, clusterTime)
 
 	eps = .1;
 	minPts = 5;
-	data = [pdws.RF [diff(pdws.TOA); 0] pdws.PW pdws.PA pdws.PB pdws.PC pdws.PD];
+	data = [pdws.RF pdws.PW pdws.PA pdws.PB pdws.PC pdws.PD];
 
-	rangeIndex = find(pdws.TOA > clusterTime, 1, 'first');
-	data = double(data(1:rangeIndex - 1, :));
+	rangeIndex = find((1e-8 .* double(pdws.TOA)) > clusterTime, 1, 'first');
+	data = double(data(1:(rangeIndex - 1), :));
 
 
 	data(:, 1) = normalize(data(:, 1), 0, 18000); % RF
