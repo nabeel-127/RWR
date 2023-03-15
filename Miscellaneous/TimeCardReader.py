@@ -1,5 +1,6 @@
 import csv
 import glob
+import tkinter as tk
 import os
 
 data = []
@@ -20,7 +21,17 @@ def parseFile():
 
 parseFile()
 data = [[row[3], row[4], row[5]] for row in data if len(row) >= 6]
+print(" ")
 print(data)
+
+main = tk.Tk()
+main.title('Hello')
+
+# button = tk.Button(main, text = 'Stop', width = 25, height = 15, command = main.destroy)
+# button.pack()
+main.mainloop()
+
+
 
 # # print(os.listdir())
 # os.chdir("Miscellaneous/")
